@@ -1,8 +1,9 @@
 """
-Example
-import houdini_self.__new_pathr
-new_files = houdini_self.__new_pathr.HouLocalizer.selected_nodes()
-s = HouLocalizer().selected_nodes()
+Author: Ivan Larinin
+
+Example:
+    import houdini_localizer
+    houdini_localizer.HoudiniLocalizer().selected_nodes()
 
 """
 
@@ -14,7 +15,7 @@ import re
 import time
 
 
-class HouLocalizer(object):
+class HoudiniLocalizer(object):
     """
     Collects all external paths to project_env directory
 
