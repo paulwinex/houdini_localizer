@@ -21,7 +21,6 @@ class HoudiniLocalizer(object):
 
     If files already in the env_directory but don't have relative paths changes it to relative
     Skips if relative paths
-
     """
 
     ext_to_subfolder = dict(
