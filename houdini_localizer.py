@@ -4,10 +4,7 @@ Author: Ivan Larinin
 Example:
     import houdini_localizer
     houdini_localizer.HoudiniLocalizer().selected_nodes()
-
 """
-
-
 import hou
 import os
 import shutil
@@ -53,7 +50,7 @@ class HoudiniLocalizer(object):
         """
         sel = hou.selectedNodes()
         if sel:
-            print '\n selected nodes are %s \n' % ([i.name() for i in sel])
+            print 'Selected nodes are %s' % ([i.name() for i in sel])
             return self.new_path(sel)
         else:
             self.errors = ['Selection is empty!']
@@ -96,9 +93,11 @@ class HoudiniLocalizer(object):
             self.display_error()
 
     def display_error(self):
+        errors = "\n".join(self.errors)
         if hou.isUIAvailable():
-            self.errors = "\n".join(self.errors)
             hou.ui.displayMessage(str(self.errors), severity=hou.severityType.Warning)
+        else:
+            print errors
 
     def new_name(self, path, node):
         """
@@ -144,7 +143,7 @@ class HoudiniLocalizer(object):
         """
         dist_exp = os.path.normpath(os.path.dirname(hou.expandString(dist)))
 
-        print '\n moving -- %s -- to the new directory -- %s' % (src, dist)
+        print 'Copy: %s >> %s' % (src, dist)
 
         if '$F' not in src:
             src = hou.expandString(src)
@@ -158,7 +157,7 @@ class HoudiniLocalizer(object):
                 if re.match(pat, file):
                     src = os.path.normpath(os.path.join(src_dir, file))
                     self.check_file(src, dist_exp)
-                    f_print = 'moved'
+                    f_print = 'copied'
                 else:
                     f_print = 'no matches were found'
             print '%s -- in -- %s -- for -- %s' % (f_print, src_dir, base_name)
@@ -175,7 +174,7 @@ class HoudiniLocalizer(object):
 
         if not os.path.exists(file_path):
             try:
-                shutil.move(src, dist)
+                shutil.copy2(src, dist)
             except WindowsError:
                 error = 'Access is denied. !!pass!! %s' % src
                 self.errors.append(error)
@@ -184,9 +183,9 @@ class HoudiniLocalizer(object):
             t_dist = time.ctime(os.path.getctime(dist))
             if t_src > t_dist:
                 try:
-                    shutil.move(src, dist)
-                    error = 'file already exists in the destination folder. !! Overwritten !! ' \
-                          'Creation time source : %s \n Creation time destination : %s' % (t_src, t_dist)
+                    shutil.copy2(src, dist)
+                    error = 'File already exists in the destination folder. !! Overwritten !! ' \
+                            'Creation time source : %s \n Creation time destination : %s' % (t_src, t_dist)
                     self.errors.append(error)
                 except WindowsError:
                     error = 'Access is denied. !!pass!! %s' % src
