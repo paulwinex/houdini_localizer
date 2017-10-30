@@ -118,9 +118,9 @@ class HoudiniLocalizer(object):
         if not full_path.startswith(self.project_root):
             # new path init
             if ext in self.ext_to_type['textures']:
-                new_path = base_path + self.ext_to_subfolder['textures'] + '/' + node.name() + '/' + base_name
+                new_path = base_path + self.ext_to_subfolder['pictures'] + '/' + node.name() + '/' + base_name
                 if node_category == 'Shop' or node_category == 'Vop':
-                    new_path = base_path + self.ext_to_subfolder['pictures'] + '/' + node.name() + '/' + base_name
+                    new_path = base_path + self.ext_to_subfolder['textures'] + '/' + node.name() + '/' + base_name
                     # create subfolders
 
             elif ext in self.ext_to_type['geo']:
