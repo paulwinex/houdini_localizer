@@ -1,11 +1,11 @@
 """
-Author: Ivan Larinin
-
-Example:
-    import houdini_localizer
-    houdini_localizer.HoudiniLocalizer().selected_nodes()
+Example
+import houdini_self.__new_pathr
+new_files = houdini_self.__new_pathr.HouLocalizer.selected_nodes()
+s = HouLocalizer().selected_nodes()
 
 """
+
 
 import hou
 import os
@@ -14,7 +14,7 @@ import re
 import time
 
 
-class HoudiniLocalizer(object):
+class HouLocalizer(object):
     """
     Collects all external paths to project_env directory
 
@@ -44,7 +44,7 @@ class HoudiniLocalizer(object):
         # variables
         self.project_env = project_env or '$HIP'
         self.project_root = hou.expandString(self.project_env)
-        self.errors = ['! Following paths are wrong !']
+        self.errors = []
 
     def selected_nodes(self):
         """
@@ -64,11 +64,15 @@ class HoudiniLocalizer(object):
         List of nodes parms
         """
         parms = []
-        for parm in node.parms():
-            if isinstance(parm.parmTemplate(), hou.StringParmTemplate):
-                if parm.parmTemplate().stringType() == hou.stringParmType.FileReference:
-                    if parm.eval() != "":
-                        parms.append(parm)
+        if not node.isInsideLockedHDA():
+            for parm in node.parms():
+                try:
+                    parm.expression()
+                except hou.OperationFailed:
+                    if isinstance(parm.parmTemplate(), hou.StringParmTemplate):
+                        if parm.parmTemplate().stringType() == hou.stringParmType.FileReference:
+                            if parm.eval() != "":
+                                parms.append(parm)
         return parms
 
     def new_path(self, sel):
@@ -81,12 +85,14 @@ class HoudiniLocalizer(object):
             nodes.append(x)
         for node in nodes:
             parms = self.get_string_parms(node)
-            for parm in parms:
-                path = parm.unexpandedString()
-                if not path.startswith(self.project_env):
-                    parm.set(self.new_name(path, node))
-
-        self.display_error()
+            if parms:
+                for parm in parms:
+                    path = parm.unexpandedString()
+                    if not path.startswith(self.project_env):
+                        parm.set(self.new_name(path, node))
+        if self.errors:
+            self.errors.insert(0, '! Following paths are wrong !')
+            self.display_error()
 
     def display_error(self):
         if hou.isUIAvailable():
@@ -113,16 +119,16 @@ class HoudiniLocalizer(object):
         if not full_path.startswith(self.project_root):
             # new path init
             if ext in self.ext_to_type['textures']:
-                new_path = base_path + self.ext_to_subfolder['textures'] + '/' + base_name
+                new_path = base_path + self.ext_to_subfolder['textures'] + '/' + node.name() + '/' + base_name
                 if node_category == 'Shop' or node_category == 'Vop':
                     new_path = base_path + self.ext_to_subfolder['pictures'] + '/' + node.name() + '/' + base_name
                     # create subfolders
 
             elif ext in self.ext_to_type['geo']:
-                new_path = base_path + self.ext_to_subfolder['geo'] + '/' + base_name
+                new_path = base_path + self.ext_to_subfolder['geo'] + '/' + node.name() + '/' + base_name
 
             else:
-                new_path = base_path + self.ext_to_subfolder['other'] + '/' + base_name
+                new_path = base_path + self.ext_to_subfolder['other'] + '/' + node.name() + '/' + base_name
 
             # copy files to project
             self.copy_file_to_project(path, new_path, base_name)
