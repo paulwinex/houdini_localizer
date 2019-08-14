@@ -7,7 +7,7 @@
 
 ### Install
 
-1. Поместить модуль `houdini_localizer.py` в `PYTHONPATH`. Папример `HOUDINI_PATH/scripts/python`
+1. Поместить модуль `houdini_localizer.py` в `PYTHONPATH`. Например `HOUDINI_PATH/scripts/python`
 2. Добавить новую кнопку на полку с таким кодом:
 
 ```python
